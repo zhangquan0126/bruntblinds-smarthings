@@ -80,7 +80,7 @@ def installed() {
 
 def updated() {
 	unschedule()
-    state.requestPosition = -1
+        state.requestPosition = -1
 	switch(refreshRate) {
 		case "5":
 			runEvery5Minutes(refresh)

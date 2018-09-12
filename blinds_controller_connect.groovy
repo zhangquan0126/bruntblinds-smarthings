@@ -17,7 +17,7 @@
 import groovy.json.JsonSlurper
 
 definition(
-    name: "Blinds Controller Connect",
+    name: "Blinds Controller Connect (Unofficial)",
     namespace: "zhangquan0126",
     author: "Quan Zhang",
     description: "A Service Manager for the Blinds Controller Device connecting through the Cloud",
