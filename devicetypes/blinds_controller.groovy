@@ -16,8 +16,8 @@
 metadata {
 	definition (name: "Blinds Controller", namespace: "zhangquan0126", author: "Quan Zhang") {
 		capability "Window Shade"
-        capability "Switch Level" // so that setLevel command can be registered
-        capability "Refresh"
+                capability "Switch Level" // so that setLevel command can be registered
+                capability "Refresh"
 	}
 
 
@@ -42,8 +42,8 @@ metadata {
                 attributeState "closed", action:"setLevel"
             }
             tileAttribute ("deviceError", key: "SECONDARY_CONTROL") {
-				attributeState "deviceError", label: '${currentValue}'
-	    	}
+		attributeState "deviceError", label: '${currentValue}'
+	    }
         }
 
         standardTile("open", "device.open", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
@@ -58,9 +58,8 @@ metadata {
             state("default", label:'preset', action:"presetPosition", icon:"st.Transportation.transportation13")
         }
         
-        controlTile("slider", "device.level", "slider", height: 2,
-                 width: 2, range:"(0..100)", inactiveLabel: false) {
-        	state "open", action:"setLevel"
+        controlTile("slider", "device.level", "slider", height: 2, width: 2, range:"(0..100)", inactiveLabel: false) {
+            state "open", action:"setLevel"
             state "closed", action:"setLevel"
     	}
 
@@ -69,8 +68,8 @@ metadata {
             state "closed", label:'', action:"refresh", icon:"st.secondary.refresh"
         } 
 		
-		main("blinds")
-		details("blinds", "open", "close", "refresher")
+	main("blinds")
+	details("blinds", "open", "close", "refresher")
 	}
 }
 
@@ -80,7 +79,7 @@ def installed() {
 
 def updated() {
 	unschedule()
-    state.requestPosition = -1
+        state.requestPosition = -1
 	switch(refreshRate) {
 		case "5":
 			runEvery5Minutes(refresh)
@@ -116,15 +115,15 @@ def parse(String description) {
 
 // handle commands
 def open() {
-	log.debug "Executing 'open'"
-	// handle 'open' command
+    log.debug "Executing 'open'"
+    // handle 'open' command
     state.requestPosition = 100
     sendCmdtoServer("openCloseResponse")
 }
 
 def close() {
-	log.debug "Executing 'close'"
-	// handle 'close' command
+    log.debug "Executing 'close'"
+    // handle 'close' command
     state.requestPosition = 0
     sendCmdtoServer("openCloseResponse")
 }
@@ -142,7 +141,7 @@ def openCloseResponse(cmdResponse){
 
 def refresh(){
     log.debug "refresh"
-	sendCmdtoServer("refreshResponse")
+    sendCmdtoServer("refreshResponse")
 }
 
 def refreshResponse(cmdResponse){
@@ -150,18 +149,18 @@ def refreshResponse(cmdResponse){
     	log.debug "cmdResponse ${cmdResponse.toString()}"
         log.debug "cmdResponse[currentPosition] ${cmdResponse.currentPosition}"
     }
-	state.currentPosition = cmdResponse.currentPosition
+    state.currentPosition = cmdResponse.currentPosition
     def status = ""
     log.debug "state.requestPosition ${state.requestPosition}"
     if (state.requestPosition != -1 && state.currentPosition != state.requestPosition.toString()) {
         status = "waiting"
     } else if (state.currentPosition == "0") {
-		status = "closed"
-	} else {
-		status = "open"
-	}
-	log.info "${device.name} ${device.label}: Power: ${status}"
-	sendEvent(name: "blinds", value: status)
+	status = "closed"
+    } else {
+	status = "open"
+    }
+    log.info "${device.name} ${device.label}: Power: ${status}"
+    sendEvent(name: "blinds", value: status)
     sendEvent(name: "level", value: state.currentPosition)
     if (status == "waiting") {
         runIn(2, refresh)
@@ -169,18 +168,18 @@ def refreshResponse(cmdResponse){
 }
 
 def presetPosition() {
-	log.debug "Executing 'presetPosition'"
-	// handle 'presetPosition' command
+    log.debug "Executing 'presetPosition'"
+    // handle 'presetPosition' command
     state.requestPosition = 0
     sendCmdtoServer("openCloseResponse")
 }
 
 //	----- SEND COMMAND TO CLOUD VIA SM -----
 private sendCmdtoServer(action){
-	def appServerUrl = getDataValue("appServerUrl")
-	def deviceId = getDataValue("deviceId")
+    def appServerUrl = getDataValue("appServerUrl")
+    def deviceId = getDataValue("deviceId")
     def sessionId = getDataValue("sessionId")
-	def cmdResponse = ""
+    def cmdResponse = ""
     if (action.find("refresh")) {
     	cmdResponse = parent.sendDeviceCmd(appServerUrl, deviceId, sessionId, -1)
     } else {
