@@ -26,15 +26,15 @@ metadata {
 	}
 
 	tiles(scale: 2) {
-        multiAttributeTile(name:"blinds", type: "windowShade", width: 6, height: 4) {
+        multiAttributeTile(name:"blinds", type: "windowShade", width: 6, height: 4, canChangeIcon: true) {
             tileAttribute("device.blinds", key: "PRIMARY_CONTROL") {
-                attributeState "open", label:'${name}', action:"close", icon:"st.doors.garage.garage-open", backgroundColor:"#ffcc33",
+                attributeState "open", label:'${name}', action:"close", icon:"st.Weather.weather14", backgroundColor:"#ffcc33",
 				nextState:"waiting"
-				attributeState "closed", label:'${name}', action:"open", icon:"st.doors.garage.garage-closed", backgroundColor:"#bbbbdd",
+				attributeState "closed", label:'${name}', action:"open", icon:"st.Seasonal Winter.seasonal-winter-011", backgroundColor:"#bbbbdd",
 				nextState:"waiting"
-				attributeState "waiting", label:'${name}', action:"refresh", icon:"st.doors.garage.garage-closed", backgroundColor:"#15EE10",
+				attributeState "waiting", label:'${name}', action:"refresh", icon:"st.Seasonal Winter.seasonal-winter-011", backgroundColor:"#15EE10",
 				nextState:"waiting"
-				attributeState "commsError", label:'Comms Error', action:"refresh", icon:"st.doors.garage.garage-closed", backgroundColor:"#ffa81e",
+				attributeState "commsError", label:'Comms Error', action:"refresh", icon:"st.Seasonal Winter.seasonal-winter-011", backgroundColor:"#ffa81e",
 				nextState:"waiting"
             }
             tileAttribute ("device.level", key: "SLIDER_CONTROL") {
@@ -47,10 +47,10 @@ metadata {
         }
 
         standardTile("open", "device.open", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-            state("closed", label:'open', action:"open", icon:"st.doors.garage.garage-opening")
+            state("closed", label:'open', action:"open", icon:"st.Weather.weather14")
         }
         standardTile("close", "device.close", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
-            state("open", label:'close', action:"close", icon:"st.doors.garage.garage-closing")
+            state("open", label:'close', action:"close", icon:"st.Seasonal Winter.seasonal-winter-011")
         }
         standardTile("preset", "device.preset", width: 2, height: 2, inactiveLabel: false, decoration: "flat") {
             state("open", label:'preset', action:"presetPosition", icon:"st.Transportation.transportation13")
@@ -69,8 +69,8 @@ metadata {
             state "closed", label:'', action:"refresh", icon:"st.secondary.refresh"
         } 
 		
-	main("blinds")
-	details("blinds", "open", "close", "preset", "refresher")
+		main("blinds")
+		details("blinds", "open", "close", "refresher")
 	}
 }
 
@@ -80,7 +80,7 @@ def installed() {
 
 def updated() {
 	unschedule()
-        state.requestPosition = -1
+    state.requestPosition = -1
 	switch(refreshRate) {
 		case "5":
 			runEvery5Minutes(refresh)
@@ -116,15 +116,15 @@ def parse(String description) {
 
 // handle commands
 def open() {
-    log.debug "Executing 'open'"
-    // handle 'open' command
+	log.debug "Executing 'open'"
+	// handle 'open' command
     state.requestPosition = 100
     sendCmdtoServer("openCloseResponse")
 }
 
 def close() {
-    log.debug "Executing 'close'"
-    // handle 'close' command
+	log.debug "Executing 'close'"
+	// handle 'close' command
     state.requestPosition = 0
     sendCmdtoServer("openCloseResponse")
 }
@@ -160,8 +160,8 @@ def refreshResponse(cmdResponse){
 	} else {
 		status = "open"
 	}
-    log.info "${device.name} ${device.label}: Power: ${status}"
-    sendEvent(name: "blinds", value: status)
+	log.info "${device.name} ${device.label}: Power: ${status}"
+	sendEvent(name: "blinds", value: status)
     sendEvent(name: "level", value: state.currentPosition)
     if (status == "waiting") {
         runIn(2, refresh)
@@ -169,18 +169,18 @@ def refreshResponse(cmdResponse){
 }
 
 def presetPosition() {
-    log.debug "Executing 'presetPosition'"
-    // handle 'presetPosition' command
+	log.debug "Executing 'presetPosition'"
+	// handle 'presetPosition' command
     state.requestPosition = 0
     sendCmdtoServer("openCloseResponse")
 }
 
 //	----- SEND COMMAND TO CLOUD VIA SM -----
 private sendCmdtoServer(action){
-    def appServerUrl = getDataValue("appServerUrl")
-    def deviceId = getDataValue("deviceId")
+	def appServerUrl = getDataValue("appServerUrl")
+	def deviceId = getDataValue("deviceId")
     def sessionId = getDataValue("sessionId")
-    def cmdResponse = ""
+	def cmdResponse = ""
     if (action.find("refresh")) {
     	cmdResponse = parent.sendDeviceCmd(appServerUrl, deviceId, sessionId, -1)
     } else {
